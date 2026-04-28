@@ -1,0 +1,49 @@
+# defectool configuration
+# Only 'structure' and 'defects' are required.
+
+structure: BN.poscar
+
+# Single defect:
+#defects:
+#  - type: vacancy
+#    element: N
+
+# Multiple defects (uncomment):
+defects:
+  - type: vacancy
+    element: B
+    count: 1
+#  - type: vacancy
+#    element: N
+#    count: 1
+#   - type: substitution
+#     element: B
+#     substitute: C
+
+supercell: [2,2,1]
+#min_cell_length: 10.0
+nprocs: 1
+
+calculator:
+  name: mace_mp
+  model: medium
+  device: cpu
+
+distortions:
+  bond_distortion_min: -0.1
+  bond_distortion_max: 0.1
+  bond_distortion_steps: 3
+  rattle_std: 0.1
+  n_rattle: 2
+  seed: 6452
+
+relaxation:
+  fmax: 0.005
+  optimizer: FIRE
+  max_steps: 1000
+
+analysis:
+  save_format: pdf
+
+mode: [generate, relax, analyse]
+output_dir: defectool_output

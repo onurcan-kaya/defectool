@@ -1,0 +1,78 @@
+# defectool configuration
+# ========================
+# Only 'structure' and 'defect' are required.
+# Everything else has sensible defaults.
+
+structure: POSCAR          # path to unit cell (CIF, POSCAR, extxyz, etc.)
+
+defect:
+  type: vacancy            # vacancy | substitution | antisite
+  element: O               # which element to create vacancy on
+  # site: 0                # alternatively, specify atom index
+  # substitute: N          # required only for substitution
+
+# Optional. When present, treats `defects:` as a pool and runs each
+# combination as its own defect configuration. Leave commented out for
+# the default behaviour (apply all listed defects to one supercell).
+# Requires the multi-entry `defects:` form (above is `defect:` singular).
+#
+# defects:
+#   - type: vacancy
+#     element: N
+#   - type: vacancy
+#     element: B
+#   - type: substitution
+#     element: B
+#     substitute: O
+#
+# combinations:
+#   singletons: true        # one config per pool entry
+#   pairs: false            # all 2-combinations
+#   triples: false          # all 3-combinations
+#   include_composite: false  # one config applying every entry at once
+
+# supercell: [3, 3, 3]     # explicit repetitions, OR:
+min_cell_length: 10.0      # auto-determine supercell so each vector >= this (A)
+
+calculator:
+  name: mace_mp            # mace_mp | mace | lammps | espresso
+  model: medium            # mace_mp: small/medium/large
+  device: cpu              # cpu or cuda
+
+  # --- LAMMPS (only if name: lammps) ---
+  # pair_style: "tersoff"
+  # pair_coeff: ["* * BNC.tersoff B N C"]
+
+  # --- QE (only if name: espresso) ---
+  # pseudopotentials:
+  #   Si: Si.pbe-n-rrkjus_psl.1.0.0.UPF
+  #   O:  O.pbe-n-kjpaw_psl.1.0.0.UPF
+  # ecutwfc: 60.0
+  # ecutrho: 480.0
+  # kspacing: 0.04
+  # smearing: cold
+  # degauss: 0.01
+
+distortions:
+  rattle_std: 0.25         # Gaussian displacement stdev (A)
+  bond_distortions: [-0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4]
+  n_rattle: 3              # number of random rattle structures
+  seed: 42
+
+relaxation:
+  fmax: 0.05               # force convergence (eV/A)
+  optimizer: FIRE           # FIRE | BFGS | LBFGS
+  max_steps: 500
+  restart: true             # retry failed structures on re-run
+
+analysis:
+  rdf_rmax: 8.0
+  rdf_nbins: 200
+  coordination_cutoff: null # null = auto-detect from pristine cell
+  save_format: pdf          # pdf | png | svg
+
+# Which pipeline stages to run:
+mode: [generate, relax, analyse]   # any subset of these three
+
+database: defectool.db
+output_dir: defectool_output
